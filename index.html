@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="ru-RU" ng-app="app">
+<head>
+	<base href="./" />
+	<meta charset="utf-8"/>
+	<meta http-equiv="x-ua-compatible" content="ie=edge">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimal-ui"/>
+	<meta http-equiv="Content-Script-Type" content="text/javascript"/>
+	<meta http-equiv="Content-Style-Type" content="text/css"/>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+	<meta name="resource-type" content="document"/>
+	<meta name="document-state" content="Dynamic"/>
+	<title>HTML5 Post Message</title>
+	<link rel="stylesheet" type="text/css" href="assets/css/bootstrap.min.css"/>
+</head>
+<body>
+<x class="inner" >
+	<x ng-controller="ScopeCtrl" ng-init="chats = cChatFrames({
+		data: ($sessionStorage.chat = {}),
+		count: 2
+	})">
+		<x ng-repeat="item in chats.items" class="item1 lt" style="width:50%;" dl-iframe="{src:'iframe.html', delay:400, self:item}"></x>
+	</x>
+</x>
+
+<x id="templates">
+<script type="text/less">
+body{margin:0px;padding:0px;}
+x{display:block;}
+.mixProp(@name;@prop){
+    @{name}{@prop();}
+	@media(min-width:992px){@{name}-md{@prop();}}
+	@media(min-width:1200px){@{name}-lg{@prop();}}
+	@media(min-width:1600px){@{name}-ll{@prop();}}
+	@media(max-width:992px){@{name}-sm{@prop();}}
+	@media(max-width:768px){@{name}-xs{@prop();}}
+	@media(max-width:480px){@{name}-xm{@prop();}}
+	@media(max-width:320px){@{name}-mm{@prop();}}
+	@media print{@{name}-print{@prop();}}
+}
+.mixProp(~'.tbl',{display:table;&>*{float:none;display:table-cell;vertical-align:middle;}});
+.mixProp(~'.tl',{text-align:left;});
+.mixProp(~'.tc',{text-align:center;});
+.mixProp(~'.tr',{text-align:right;});
+.mixProp(~'.lt',{float:left;});
+.mixProp(~'.ct',{margin-left:auto;margin-right:auto;});
+.mixProp(~'.rt',{float:right;});
+.mixProp(~'.w',{width:100%;});
+.mixProp(~'.h',{height:100%;});
+.item1{
+	height:97vh;
+	padding:10px;
+	iframe{border:solid 1px #000;width:100%;height:100%}
+}
+</script>
+</x>
+
+<x id="scripts">
+<script src="assets/js/jquery-2.0.0.min.js"></script>
+<script src="assets/js/less.min.js"></script>
+<script src="assets/js/angular.min.js"></script>
+<script src="assets/js/dl.js"></script>
+<script>
+var app = angular.module('app', ['dlStorage']);
+app.controller('ScopeCtrl',function($scope){});
+
+app.run(['$rootScope','$sessionStorage','$localStorage',function($rootScope,$sessionStorage,$localStorage){
+	$("script[type='text/less']").less();
+	$rootScope.objectval = objectval;
+	$rootScope.$sessionStorage = $sessionStorage;
+	$rootScope.$localStorage = $localStorage;
+	
+	var cChatFrames = $rootScope.cChatFrames = function(options){
+		options = objectval(options);
+		var s = {items:[]}, i = 0, frames = s.items, count = intval(options.count), id = 0,
+		data = objectval(options.data), methods = dl.merge([ options.methods, {
+			messages:function(e,src){
+				if(!is_array(src))return;
+				var tmp, t = (new Date).getTime(), dst = [], i = 0;
+				for(; i < src.length; i++){
+					if(!is_object(tmp = src[i]))continue;
+					id++;
+					tmp.id = id;
+					tmp.createdon = t;
+					dst.push(tmp);
+				}
+				data.items = arrayval(data.items).concat(dst);
+				$rootScope.$apply();
+				for(i = 0; i < frames.length; i++)frames[i].send({ messages:dst });
+			}
+		}]);
+		function chat(){ 
+			var chat = this, win;
+			chat.send = function(v){
+				if(win)win.postMessage(angular.toJson(v),'*');
+			};
+			chat.init = function(w){
+				win = w;
+				chat.send({ 
+					init:[ ],
+					messages: arrayval(data.items) 
+				});
+			};
+			chat.destroy = function(w){
+	
+			};
+		}
+		for(; i < count; i++)frames.push(new chat());
+		function handler(e){
+			var data = e.data;
+			if(data === undefined){
+				if(!is_object(e.originalEvent))return;
+				data = e.originalEvent.data;
+				if(data === undefined)return;
+			}
+			data = angular.fromJson(data);
+			if(!is_object(data))return;
+			var k,m;
+			for(k in data){if(is_func(m = methods[k]))m(e,data[k]);}
+		}
+		if(window.addEventListener){
+			window.addEventListener("message",handler);
+		}else{
+			window.attachEvent("onmessage",handler);
+		}
+		
+		return s;
+	};
+	
+		
+
+}]);
+
+app.directive('dlIframe',['$rootScope',function($rootScope){
+	var defaultDelay = 200;
+    return {
+        restrict:'A',
+        link: function($scope, element, attrs){
+			var iframe, url, s;
+			function dest(){
+				if(!iframe)return;
+				var destroy = s.destroy;
+				if(is_func(destroy))destroy();
+				$(iframe).remove();
+				iframe = 0;
+			}
+			function init(options){
+				var src = options.src;
+				if(!is_string(src) || src === url)return;
+				url = src;
+				s = objectval(options.self);
+				dest();
+				iframe = document.createElement('iframe');
+				iframe.src = options.src;
+				element.append(iframe);
+				timeout.run(intval(options.delay, defaultDelay));
+			}
+			var timeout = new dl.Timeout({
+				delay: defaultDelay, 
+				callback: function(){
+					var init = s.init;
+					if(is_func(init))init(iframe.contentWindow);
+				}
+			}),
+			varname = attrs.dlIframe, options = objectval($scope.$eval(varname)),
+			watchCancel /* = $scope.$watch(varname,function(newVal){
+    		    if(angular.equals(newVal,options))return;
+				if(!is_object(newVal))return;
+    		    options = newVal; 	
+				init(options);	
+    		}) */;
+			function destroy(){
+				if(is_func(watchCancel))watchCancel();
+				timeout.cancel();
+				dest();
+			}
+			init(options);
+			$scope.$on('$destroy',destroy);
+        }
+    };
+}]);
+
+
+</script>
+</x>
+</body>
+</html>

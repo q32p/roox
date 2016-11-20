@@ -1,0 +1,267 @@
+﻿<!DOCTYPE html>
+<html lang="ru-RU" ng-app="app">
+<head>
+	<base href="./" />
+	<meta charset="utf-8"/>
+	<meta http-equiv="x-ua-compatible" content="ie=edge">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimal-ui"/>
+	<meta http-equiv="Content-Script-Type" content="text/javascript"/>
+	<meta http-equiv="Content-Style-Type" content="text/css"/>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+	<meta name="resource-type" content="document"/>
+	<meta name="document-state" content="Dynamic"/>
+	<title>HTML5 Post Message</title>
+	<link rel="stylesheet" type="text/css" href="assets/css/bootstrap.min.css"/>
+</head>
+<body>
+<x class="inner pd10x">
+	<x ng-controller="ScopeCtrl" ng-init="s = cChat({render:render}); $w('s.src.name',s.render)">
+		<x class="mg10b">
+			<form novalidate name="form" onsubmit="return false;" ng-submit="s.send()">
+				<x class="mg10b">
+					<label>
+						<input class="form-control" placeholder="Имя" ng-model="s.src.name" required ng-minlength="2"/>
+					</label>
+				</x>
+				<x class="mg10b">
+					<label>
+						<textarea class="form-control" placeholder="Сообщение" ng-model="s.src.content" required></textarea>
+					</label>
+				</x>
+				<x class="bord1 pd5 mg10b clearfix">
+					<a ng-repeat="item in [ ':1134:', ':1131:', ':0113:', 
+					':0051:', ':1141:', ':1146:', ':1128:', ':0048:'] track by $index" 
+					class="lt mg10r tbl" ng-click="s.src.content = s.src.content + item">
+					<span dl-bind="item | chat"></span><span ng-bind="item"></span></a>
+				</x>
+				<x>
+					<button class="btn btn-default" type="submit" ng-disabled="form.$invalid">
+						<span>Отправить</span>
+					</button>   
+				</x>
+			</form>
+		</x>
+		
+		<x class="bord1 pd10" style="max-height:200px; overflow-y:scroll;">
+			<x ng-if="s.dst.items.length < 1">Сообщений нет...</x>
+			<x ng-if="s.dst.items.length > 0">
+				<x class="item2 mg5b pd5" ng-repeat="item in s.dst.items | orderBy:'createdon':1">
+					<x class="" ng-bind="item.name"></x>
+					<x class="f12" ng-bind="item.createdon | date:'HH:mm:ss dd.MM.yyyy'"></x>
+					<!--
+					<x class="f12 mg5" dl-bind="item.content | chat:{ nicks : s.dst.items }"></x>
+					-->
+					<x class="f12 mg5" dl-bind="item.body" dl-watch="[ 's.src.name' ]" ></x>
+				</x>
+			</x>
+		</x>
+	</x>
+</x>
+
+<x id="templates">
+<script type="text/less">
+.mix(@n,@v){-webkit-@{n}:@v;-ms-@{n}:@v;-moz-@{n}:@v;-o-@{n}:@v;@{n}:@v;}
+.mixDuration(@sec:0.25s){.mix(transition-duration,@sec);}
+.mixProp(@name;@prop){
+    @{name}{@prop();}
+	@media(min-width:992px){@{name}-md{@prop();}}
+	@media(min-width:1200px){@{name}-lg{@prop();}}
+	@media(min-width:1600px){@{name}-ll{@prop();}}
+	@media(max-width:992px){@{name}-sm{@prop();}}
+	@media(max-width:768px){@{name}-xs{@prop();}}
+	@media(max-width:480px){@{name}-xm{@prop();}}
+	@media(max-width:320px){@{name}-mm{@prop();}}
+	@media print{@{name}-print{@prop();}}
+}
+.mixSide(@n,@p,@v){
+    .mixProp(~'.@{n}x',{@{p}top:@v;@{p}bottom:@v;@{p}left:@v;@{p}right:@v;});
+    .mixProp(~'.@{n}',{@{p}top:@v;@{p}bottom:@v;});
+    .mixProp(~'.@{n}h',{@{p}left:@v;@{p}right:@v;});
+    .mixProp(~'.@{n}t',{@{p}top:@v;});
+    .mixProp(~'.@{n}b',{@{p}bottom:@v;});
+    .mixProp(~'.@{n}l',{@{p}left:@v;});
+    .mixProp(~'.@{n}r',{@{p}right:@v;});
+}
+.mixPD(@v){.mixSide(~'pd@{v}',padding-,~'@{v}px');}
+.mixMG(@v){.mixSide(~'mg@{v}',margin-,~'@{v}px');}
+.mixFS(@i){.mixProp(~'.f@{i}',{font-size:~'@{i}px';});}
+x{display:block;}
+.mixProp(~'.tbl',{
+    display:table;
+	&>*{
+	    float:none;
+		display:table-cell;
+		vertical-align:middle;
+	}
+});
+.mixProp(~'.lt',{float:left;});
+
+label{display:block;font-weight:inherit;position:relative;}
+textarea{max-width: 100%;resize: vertical;}
+input,textarea,select{
+	&[required]{
+		.mixDuration(0.5s);
+		.mix(transition-property,border);
+	}
+}
+form:hover{input,textarea,select{&[required].ng-invalid{border-color:#F00;}}}
+.mixOpacity(@v){
+	@filter:@v * 100;
+	.mix(opacity,@v);
+	filter:Alpha(Opacity=@filter);
+}
+.hOpacity(@v){
+	.mixDuration(0.25s);
+	.mixOpacity(1);
+	&:hover{.mixOpacity(@v);}
+}
+a{
+    .hOpacity(0.7);
+    outline: none;
+	&,&:visited,&:hover,&:focus{text-decoration:none;color:#000;cursor:pointer;}
+}
+
+.mixMG(10);
+.mixMG(5);
+.mixPD(10);
+.mixPD(5);
+
+.mixFS(12);
+.mixFS(14);
+
+.bord1{border-top:solid 1px #ccc;border-bottom:solid 1px #ccc;}
+.item2{
+    border-bottom:solid 1px #eee;
+}
+
+</script>
+</x>
+
+<x id="scripts">
+<script src="assets/js/jquery-2.0.0.min.js"></script>
+<script src="assets/js/less.min.js"></script>
+<script src="assets/js/angular.min.js"></script>
+<script src="assets/js/dl.js"></script>
+<script>
+var app = angular.module('app', ['dlStorage']);
+app.controller('ScopeCtrl',function($scope){
+	var timeout = new dl.Timeout({
+		delay:100,
+		callback:function(){
+			$scope.$apply();
+		}
+	});
+	
+	$scope.$w = function(k,c){
+		if(!is_func(c))return;
+		return $scope.$watch(k,function(nV,oV){
+			if(angular.equals(nV,oV))return;
+			c(nV);
+			timeout.run();
+		});
+	};
+});
+dl.factories(app,['$rootScope','$compile']);
+
+app.run(['$rootScope','$filter',function($rootScope,$filter){
+	$("script[type='text/less']").less();	
+	
+	var cChat = $rootScope.cChat = function(options){
+		options = objectval(options);
+		var s = {src:objectval(options.src)}, parent, dst = s.dst = objectval(options.dst),
+		apply = function(){$rootScope.$apply();},
+		methods = s.methods = dl.merge([options.methods,{
+			init: function(e){parent = e.source;},
+			messages: function(e,src){
+				if(!is_array(src))return;
+				var items = dst.items = arrayval(dst.items).concat(src), tmp, render = options.render;
+				if(is_func(render))render(items.concat(s.src));
+				setTimeout(apply,100);
+			}
+		}]);
+		dst.items = arrayval(dst.items);
+		s.render = function(){
+			var render = options.render;
+			if(is_func(render))render(arrayval(dst.items).concat(s.src));
+		};
+		s.send = function(src){
+			if(!is_object(parent))return;
+			(window.parent || parent).postMessage(angular.toJson({messages: [ dl.merge([ s.src, src ]) ]}), '*');
+			s.src.content = '';
+		};
+		
+		var listener = function(e){
+			var data = e.data;
+			if(data === undefined){
+				if(!is_object(e.originalEvent))return;
+				data = e.originalEvent.data;
+				if(data === undefined)return;
+			}
+			data = angular.fromJson(data);
+			if(!is_object(data))return;
+			var k,m;
+			for(k in data){if(is_func(m = methods[k]))m(e,data[k]);}
+		};
+		if(window.addEventListener) {
+			window.addEventListener("message",listener);
+		}else{
+			window.attachEvent("onmessage",listener);
+		}
+		return s;
+	};
+	
+	$rootScope.render = function(items){
+		for(var i = 0; i < items.length; i++){
+			tmp = items[i];
+			tmp.body = $filter('chat')(tmp.content,{nicks:items});
+		}
+	};
+		
+	
+	
+}]);
+
+app.filter('chat',['$filter',function($filter){ 
+    var nickReplacer = function(find,v1,v2){
+		return v1 ? '<b>' + v1 + '</b>' : '<img src="assets/img/' + v2.substr(1,4) + '.gif"/>';
+	},nr2 = function(find,v1){return '<img src="assets/img/' + v1.substr(1,4) + '.gif"/>';};
+    return function(v,o,c){
+		o = objectval(o);
+		var nicks = arrayval(o.nicks),tmp, n, q = '';
+		for(var i = 0; i < nicks.length; i++){
+			if(!is_object(tmp = nicks[i]))continue;
+			if((n = String(tmp.name).trim()) === '')continue;
+			q += ((i?'|':'') + n );
+		}
+		if(q !== '')q = '('+q+')|';
+		var expr = new RegExp(q + '(:[0-9]{4}:)','gim');
+        v = String(v).replace(expr,q !== '' ? nickReplacer : nr2);
+        return v;
+    }
+}]);
+
+
+
+dl.drv('dlBind',function($m){
+    return function(s){
+        var $s = s.$s, $e = s.$e, a = s.a, v = $s.$eval(s.exp), 
+		vc = s.$w(function(nV,oV){v = nV; c();}), ws = arrayval($s.$eval(a.dlWatch)),
+		vgc = $s.$watchGroup(ws,function(){
+			v = $s.$eval(s.exp); c();
+		}),
+		$x, c = function(r){
+			if($x)$x.$destroy();
+			$x = $s.$new();
+			$e.html(v);
+			$m.$compile($e.contents())($x);
+			//if(r)$x.$apply();
+    	};
+        $s.$on('$destroy',function(){vc();vgc(); if($x)$x.$destroy();});
+        c();
+    }
+});
+
+</script>
+</x>
+</body>
+</html>
