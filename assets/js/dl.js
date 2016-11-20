@@ -142,18 +142,7 @@ proto(Array,'getBy',function(a,s){
     }
 	return d;
 });
-proto(Array,'resetAll',function(s){
-	var v,k,i;
-	if(is_object(s)){
-		for(i = 0; i < this.length; i++){
-			if( !is_object(v = this[i]) )v = this[i] = {};
-			for(k in s)v[k] = s[k];
-		}
-		return this;
-	}
-    for(i = 0; i < this.length; i++)this[i] = s;
-	return this;
-});
+
 proto(String,'fromJSON',function(){
 	try{ return JSON.parse(this); }catch(e){}
 	return null;
