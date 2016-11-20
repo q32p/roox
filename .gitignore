@@ -2,4 +2,26 @@
 logs/
 # txt files
 docs/*.txt
-#git commit -a -m"init"
+# Сделать коммит
+# git commit -a -m"init"
+
+# Откатить к последнему коммиту
+# git checkout -- LICENSE.php
+
+# Настройка редактора
+# git config --global core.editor "'D:\Program Files\Notepad++\notepad++.exe' -multiInst -notabbar -nosession -noPlugin"
+
+# создание и переход на новую ветку
+# git checkout -b new_f
+
+# переход на другую ветку
+# git checkout new_f
+
+# Загрузка локальных изменений в удаленный репозиторий
+# git push origin master
+
+# Добавление удаленного репозитория
+# git remote add roox https://github.com/q32p/roox.git
+
+# Загрузка локальных изменений в удаленный репозиторий
+# git push roox master
